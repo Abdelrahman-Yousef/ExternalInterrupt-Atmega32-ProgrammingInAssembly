@@ -1,0 +1,45 @@
+;
+; External_Interrupt.asm
+;
+; Created: 8/16/2023 8:21:08 PM
+; Author : Options
+;
+
+
+; Replace with your application code
+
+.INCLUDE "m32def.inc"
+
+.ORG 0x00
+JMP MAIN
+
+.ORG 0x02
+JMP INT0_ISR
+
+.ORG 0x100
+MAIN:
+LDI R16,HIGH(RAMEND)
+OUT SPH,R16
+LDI R16,LOW(RAMEND)
+OUT SPL,R16
+
+SBI DDRC,3
+CBI DDRD,2
+SBI PORTD,2
+
+LDI R16,0x02
+OUT MCUCR,R16
+
+LDI R16,0x40
+OUT GICR,R16
+SEI
+
+LOOP: RJMP LOOP
+
+.ORG 0x200
+INT0_ISR:
+IN R20,PORTC
+LDI R21,0x08
+EOR R20,R21
+OUT PORTC,R20
+RETI
